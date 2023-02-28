@@ -1,11 +1,6 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿/// <summary>
+/// Representa el contrato de datos que se obtienen de la API de usuarios.
+/// </summary>
 internal class UserDTO
 {
     public int id { get; set; }

@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿/// <summary>
+/// Interfaz que representa un repositorio de imágenes de usuario.
+/// </summary>
 internal interface IGravatarRepository
 {
+    /// <summary>
+    /// Obtiene la imagen del usuario representado por <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">Identificador del usuarios del que se requiere su imagen.</param>
+    /// <returns><see cref="byte[]"/> con los datos de la imagen del usuario.</returns>
     byte[] getGravatar(string id);
 }

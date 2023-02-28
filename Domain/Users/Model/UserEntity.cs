@@ -1,3 +1,6 @@
+/// <summary>
+/// Representa un Usuario registrado en el sistema.
+/// </summary>
 public class UserEntity
 {
     public int id {get; set;}
