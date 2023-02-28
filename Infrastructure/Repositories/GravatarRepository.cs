@@ -20,6 +20,7 @@ namespace Infrastructure.Repositories
         /// </summary>
         /// <param name="client">Cliente de acceso a la API REST.</param>
         /// <param name="configuration">Configuración de la aplicación.</param>
+        /// <param name="logger">Logging infrastructure.</param>
         public GravatarRepository(RestClient client, IConfiguration configuration, ILogger<IGravatarRepository> logger)
         {
             _client = client;

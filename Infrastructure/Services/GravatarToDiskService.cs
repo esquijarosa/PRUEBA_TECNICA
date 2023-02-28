@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repositories;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,18 +15,18 @@ namespace Infrastructure.Services
     /// </summary>
     public class GravatarToDiskService : IGravatarToDiskService
     {
-        /// <summary>
-        /// Referencia al repositorio de imágenes de usuario.
-        /// </summary>
         private readonly IGravatarRepository _gravatarRepository;
+        private readonly ILogger<IGravatarRepository> _logger;
 
         /// <summary>
         /// Construye una nueva instancia del servicio de almacenamiento en disco de imágenes de usuario.
         /// </summary>
         /// <param name="gravatarRepository">Repositorio de imágenes de usuario.</param>
-        public GravatarToDiskService(IGravatarRepository gravatarRepository)
+        /// <param name="logger">Logging infrastructure.</param>
+        public GravatarToDiskService(IGravatarRepository gravatarRepository, ILogger<IGravatarRepository> logger)
         {
             _gravatarRepository = gravatarRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -36,24 +37,26 @@ namespace Infrastructure.Services
         /// <see cref="false"/>.</returns>
         public bool SaveGravatarFromUsers(IEnumerable<UserEntity> users)
         {
-            /// Para cada usuario en la lista de usuarios...
-            foreach (UserEntity user in users)
+            try
             {
-                /// Genera el HASH para el correo electrónico del usuario actual.
-                string hashedEmail = generateHash(user.emailAddress);
+                foreach (UserEntity user in users)
+                {
+                    string hashedEmail = GenerateHash(user.emailAddress);
 
-                /// Obtiene la imagen del usuario.
-                byte[] binaryGravatar = _gravatarRepository.GetGravatar(hashedEmail);
+                    byte[] binaryGravatar = _gravatarRepository.GetGravatar(hashedEmail);
 
-                /// Crea un archivo de imagen PNG cuyo nombre corresponde al identificador del usuario actual.
-                Stream imageFile = new FileStream($"./{user.id}.png", FileMode.Create);
-                /// Escribe los datos de la imagen al archivo.
-                imageFile.Write(binaryGravatar);
-                /// Cierra el flujo de datos para que se pueda crear el archivo en disco.
-                imageFile.Close();
+                    using Stream imageFile = new FileStream($"./{user.id}.png", FileMode.Create);
+                    imageFile.Write(binaryGravatar);
+                    imageFile.Close();
+                }
+
+                return true;
             }
-
-            return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -61,17 +64,12 @@ namespace Infrastructure.Services
         /// </summary>
         /// <param name="email"><see cref="string"/> reprentando una dirección de correo electrónico.</param>
         /// <returns>HASH MD5 de la dirección de correo electrónico representada en <paramref name="email"/>.</returns>
-        private string generateHash(string email)
+        private static string GenerateHash(string email)
         {
-            /// Obtiene la representación en bytes de la dirección de correo electrónico
-            /// utilizando codificación ASCII.
             byte[] data = Encoding.ASCII.GetBytes(email);
 
-            /// Genera el HASH utilizando el algoritmo de digestión MD5
             data = MD5.Create().ComputeHash(data);
 
-            /// Regresa una cadena de texto con la representación hexadecimal del HASH
-            /// con todos los caracteres en minúsculas.
             return Convert.ToHexString(data).ToLower();
         }
     }
