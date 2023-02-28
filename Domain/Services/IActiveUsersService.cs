@@ -12,6 +12,6 @@ namespace Domain.Services
         /// Obtiene la lista de usuarios activos.
         /// </summary>
         /// <returns><see cref="IEnumerable{UserEntity}"/> con la lista de usuarios activos.</returns>
-        IEnumerable<UserEntity> getActiveUsers();
+        IEnumerable<UserEntity> GetActiveUsers();
     }
 }

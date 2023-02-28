@@ -10,6 +10,6 @@
         /// </summary>
         /// <param name="id">Identificador del usuarios del que se requiere su imagen.</param>
         /// <returns><see cref="byte[]"/> con los datos de la imagen del usuario.</returns>
-        byte[] getGravatar(string id);
+        byte[] GetGravatar(string id);
     }
 }

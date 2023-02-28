@@ -14,6 +14,6 @@ namespace Domain.Services
         /// <param name="users">Lista de usuarios de los que se quiere almacenar su imagen en disco.</param>
         /// <returns><see cref="true"/> si se han podido almacenar las imágenes correctamente. De lo contrario
         /// <see cref="false"/>.</returns>
-        bool saveGravatarFromUsers(IEnumerable<UserEntity> users);
+        bool SaveGravatarFromUsers(IEnumerable<UserEntity> users);
     }
 }

@@ -12,6 +12,6 @@ namespace Domain.Repositories
         /// Obtiene la lista de todos los usuarios registrados.
         /// </summary>
         /// <returns><see cref="IEnumerable{UserEntity}"/> con la lista de los usuarios registrados.</returns>
-        IEnumerable<UserEntity> getAll();
+        IEnumerable<UserEntity> GetAll();
     }
 }

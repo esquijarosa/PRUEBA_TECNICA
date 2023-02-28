@@ -39,7 +39,7 @@ namespace PRUEBA_TECNICA
             IActiveUsersService userService = serviceProvider.GetService<IActiveUsersService>();
 
             /// Obtiene la lista de usuarios activos.
-            IEnumerable<UserEntity> users = userService.getActiveUsers();
+            IEnumerable<UserEntity> users = userService.GetActiveUsers();
             /// Escribe en la consola un mensaje con el número de usuarios activos obtenidos.
             Console.WriteLine($"Usuarios: {users.Count()}");
 
@@ -48,7 +48,7 @@ namespace PRUEBA_TECNICA
             IGravatarToDiskService toDiskService = serviceProvider.GetService<IGravatarToDiskService>();
 
             /// Almacena en disco las imágenes de los usuarios activos.
-            toDiskService.saveGravatarFromUsers(users);
+            toDiskService.SaveGravatarFromUsers(users);
         }
 
         /// <summary>
@@ -76,6 +76,8 @@ namespace PRUEBA_TECNICA
 
             /// Configura el servicio de configuración para la aplicación.
             services.AddSingleton(Program._configuration);
+
+            services.AddLogging();
         }
 
         /// <summary>

@@ -10,10 +10,7 @@ namespace Infrastructure.Services
     /// </summary>
     public class ActiveUsersService : IActiveUsersService
     {
-        /// <summary>
-        /// Referencia al repositorio de usuarios.
-        /// </summary>
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository _userRepository;
 
         /// <summary>
         /// Construye una nueva instancia de <see cref="ActiveUsersService"/> con una referencia al
@@ -22,22 +19,19 @@ namespace Infrastructure.Services
         /// <param name="userRepository">Repositorio de usuarios activos.</param>
         public ActiveUsersService(IUserRepository userRepository)
         {
-            this.userRepository = userRepository;
+            _userRepository = userRepository;
         }
 
         /// <summary>
         /// Obtiene la lista de usuarios activos.
         /// </summary>
         /// <returns><see cref="IEnumerable{UserEntity}"/> con la lista de usuarios activos.</returns>
-        public IEnumerable<UserEntity> getActiveUsers()
+        public IEnumerable<UserEntity> GetActiveUsers()
         {
-            /// Obtiene la lista de usuarios desde el repositorio.
-            IEnumerable<UserEntity> users = userRepository.getAll();
+            IEnumerable<UserEntity> users = _userRepository.GetAll();
 
             List<UserEntity> activeUsers = new List<UserEntity>();
 
-            /// Recorre la lista y valida qué usuarios están activos para agregarlos a la lista
-            /// de usuarios activos.
             foreach (UserEntity user in users)
             {
                 if (user.status == "active")
@@ -47,7 +41,6 @@ namespace Infrastructure.Services
 
             }
 
-            /// Regresa la lista de usuarios activos.
             return activeUsers;
         }
     }

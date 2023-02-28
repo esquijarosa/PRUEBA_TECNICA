@@ -34,7 +34,7 @@ namespace Infrastructure.Services
         /// <param name="users">Lista de usuarios de los que se quiere almacenar su imagen en disco.</param>
         /// <returns><see cref="true"/> si se han podido almacenar las imágenes correctamente. De lo contrario
         /// <see cref="false"/>.</returns>
-        public bool saveGravatarFromUsers(IEnumerable<UserEntity> users)
+        public bool SaveGravatarFromUsers(IEnumerable<UserEntity> users)
         {
             /// Para cada usuario en la lista de usuarios...
             foreach (UserEntity user in users)
@@ -43,7 +43,7 @@ namespace Infrastructure.Services
                 string hashedEmail = generateHash(user.emailAddress);
 
                 /// Obtiene la imagen del usuario.
-                byte[] binaryGravatar = _gravatarRepository.getGravatar(hashedEmail);
+                byte[] binaryGravatar = _gravatarRepository.GetGravatar(hashedEmail);
 
                 /// Crea un archivo de imagen PNG cuyo nombre corresponde al identificador del usuario actual.
                 Stream imageFile = new FileStream($"./{user.id}.png", FileMode.Create);

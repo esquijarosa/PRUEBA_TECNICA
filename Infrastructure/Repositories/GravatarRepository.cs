@@ -1,5 +1,8 @@
 ﻿using RestSharp;
 using Domain.Repositories;
+using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repositories
 {
@@ -8,18 +11,20 @@ namespace Infrastructure.Repositories
     /// </summary>
     public class GravatarRepository : IGravatarRepository
     {
-        /// <summary>
-        /// Referencia al cliente de acceso a la API REST.
-        /// </summary>
-        private readonly RestClient client;
+        private readonly RestClient _client;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<IGravatarRepository> _logger;
 
         /// <summary>
         /// Construye una nueva instancia del repositorio de imágenes de usuario.
         /// </summary>
         /// <param name="client">Cliente de acceso a la API REST.</param>
-        public GravatarRepository(RestClient client)
+        /// <param name="configuration">Configuración de la aplicación.</param>
+        public GravatarRepository(RestClient client, IConfiguration configuration, ILogger<IGravatarRepository> logger)
         {
-            this.client = client;
+            _client = client;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -27,22 +32,28 @@ namespace Infrastructure.Repositories
         /// </summary>
         /// <param name="id">Identificador del usuarios del que se requiere su imagen.</param>
         /// <returns><see cref="byte[]"/> con los datos de la imagen del usuario.</returns>
-        public byte[] getGravatar(string id)
+        public byte[] GetGravatar(string id)
         {
-            /// Prepara la dirección del punto de acceso a la API de imágnes de usuarios
-            /// con el identificador del usuario recibido en el parámetro 'id'.
-            string url = $"https://www.gravatar.com/avatar/{id}?s=32&d=identicon&r=PG";
-            /// Prepara una petición GET a la API REST representada por 'url'.
-            RestRequest request = new RestRequest(url, Method.Get);
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("El identificador del usuario no puede estar vacío.");
+                }
 
-            /// Ejecuta de manera asíncrona la petición de la iamgen del usuario.
-            var response = client.DownloadDataAsync(request);
-            /// Espera a que termine de ejecutar el método asíncrono.
-            response.Wait();
+                string url = string.Format(_configuration["apiEndpoints:gravatarEndpoint"], id);
+                RestRequest request = new RestRequest(url, Method.Get);
 
-            /// Regresa el contenido de la imagen como un <see cref="byte[]"/>.
-            return response.Result;
+                var response = _client.DownloadDataAsync(request);
+                response.Wait();
 
+                return response.Result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
         }
     }
 }
