@@ -1,24 +1,35 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Domain.Models;
+using Domain.Repositories;
+using Domain.Services;
+using Infrastructure.DTO;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace PRUEBA_TECNICA
 {
     class Program
     {
+        private static IConfiguration _configuration;
+
         /// <summary>
         /// Punto de entrada de la aplicación de consola.
         /// </summary>
-        /// <param name="args">No se utilizan</param>
+        /// <param name="args">No se utilizan.</param>
         static void Main(string[] args)
         {
+            _configuration = BuildConfiguration(new ConfigurationBuilder());
+
             #region Configuración de la injección de dependencias
 
             var services = new ServiceCollection();
-            configureServices(services);
+            ConfigureServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -35,7 +46,7 @@ namespace PRUEBA_TECNICA
             /// Crea una instancia del servicio de almacenamiento en disco de las imágenes
             /// de los usuarios activos.
             IGravatarToDiskService toDiskService = serviceProvider.GetService<IGravatarToDiskService>();
-            
+
             /// Almacena en disco las imágenes de los usuarios activos.
             toDiskService.saveGravatarFromUsers(users);
         }
@@ -44,7 +55,7 @@ namespace PRUEBA_TECNICA
         /// Configura la injección de dependencias del proyecto.
         /// </summary>
         /// <param name="services">Referencia a l colección de servicios.</param>
-        private static void configureServices(IServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services)
         {
             /// Configura una instancia (Singleton) única del cliente de RestSharp
             /// para la comunicación con REST APIs
@@ -61,7 +72,23 @@ namespace PRUEBA_TECNICA
 
             /// Configura el servicio de AutoMapper para la conversión del <see cref="UserDTO"/>
             /// recibido desde la API en <see cref="UserEntity"/>.
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(UserMapProfile));
+
+            /// Configura el servicio de configuración para la aplicación.
+            services.AddSingleton(Program._configuration);
+        }
+
+        /// <summary>
+        /// Enlaza el archivo de configuración para la aplicación.
+        /// </summary>
+        /// <param name="builder">Constructor de configuración.</param>
+        /// <returns><see cref="IConfiguration"/> con la configuración de la aplicación.</returns>
+        private static IConfiguration BuildConfiguration(IConfigurationBuilder builder)
+        {
+            builder.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            return builder.Build();
         }
     }
 }
